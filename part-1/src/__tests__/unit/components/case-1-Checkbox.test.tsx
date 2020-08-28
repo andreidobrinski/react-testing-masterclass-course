@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import { axe } from 'jest-axe'
 import { render, fireEvent } from '@testing-library/react'
 
@@ -21,18 +20,21 @@ describe('The <Checkbox /> component', () => {
     checked: false,
   }
 
-  it('❌ Should render the label and checkbox the user will see', () => {
-    const container = document.createElement('div')
-    ReactDOM.render(
-      <Checkbox {...defaultCheckboxProps} />,
-      container
-    )
+  const setupCheckbox = () => render(
+    <Checkbox {...defaultCheckboxProps} />,
+  )
 
-    expect(container.querySelector('label')).not.toBeNull()
-    expect(container.querySelector('input[type="checkbox"]')).not.toBeNull()
+  it('Should render the label and checkbox the user will see', () => {
+    const { asFragment } = setupCheckbox()
+
+    expect(asFragment()).toMatchSnapshot()
   })
 
-  it('❌ Should make the checkbox accessible by setting the id and htmlFor attributes on label and checkbox', () => {})
+  it('Should make the checkbox accessible by setting the id and htmlFor attributes on label and checkbox', () => {
+    const { getByLabelText } = setupCheckbox()
+
+    expect(getByLabelText(defaultCheckboxProps.label)).toBeInTheDocument()
+  })
 
   it('❌ Should call the onChange handler when it is provided', () => {})
 
