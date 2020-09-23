@@ -24,8 +24,17 @@ describe('The <ProductTile /> component', () => {
     expect(getByAltText(defaultProduct.name)).toBeInTheDocument()
   })
 
-  it('❌ renders a product tile with name and price only', () => {
+  it('renders a product tile with name and price only', () => {
+    // query returns null if not found
+    const { queryByAltText, queryByTestId } = render(
+      <ProductTile {...{
+        defaultProduct,
+        image: undefined,
+      } as any } />,
+    )
 
+    expect(queryByAltText(defaultProduct.name)).toBeNull()
+    expect(queryByTestId('ProductTileImage')).toBeNull()
   })
 
   it('❌ has no accessibility violations', async () => {
