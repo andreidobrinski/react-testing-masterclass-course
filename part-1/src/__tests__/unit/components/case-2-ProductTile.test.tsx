@@ -37,7 +37,11 @@ describe('The <ProductTile /> component', () => {
     expect(queryByTestId('ProductTileImage')).toBeNull()
   })
 
-  it('❌ has no accessibility violations', async () => {
+  it('has no accessibility violations', async () => {
+    const { container } = render(
+      <ProductTile {...(defaultProduct as any)} />,
+    )
 
+    expect(await axe(container)).toHaveNoViolations()
   })
 })
