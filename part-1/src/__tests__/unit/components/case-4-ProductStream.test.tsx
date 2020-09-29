@@ -33,5 +33,11 @@ describe('The <ProductStream /> component', () => {
     expect(getAllByTestId('ProductTile')).toHaveLength(defaultProducts.length)
   })
 
-  it('❌ has no accessibility violations', async () => {})
+  it('has no accessibility violations', async () => {
+    const { container } = render(
+      <ProductStream products={defaultProducts as any} />
+    )
+
+    expect(await axe(container)).toHaveNoViolations()
+  })
 })
