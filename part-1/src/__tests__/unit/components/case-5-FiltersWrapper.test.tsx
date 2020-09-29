@@ -17,23 +17,25 @@ describe('The <FiltersWrapper /> component', () => {
     expect(getByTestId('TestParagraph')).toBeInTheDocument()
   })
 
-  it('should update the filters context with correct state values', () => {
-    const hideMessage = 'HIDE FILTERS'
-    const showMessage = 'SHOWING FILTERS'
+  const hideMessage = 'HIDE FILTERS'
+  const showMessage = 'SHOWING FILTERS'
 
-    const { getByText } = render(
-      <FiltersWrapper>
-        <FiltersContext.Consumer>
-          {({ showingFilters, toggleShowingFilters }) => {
-            return (
-              <button onClick={toggleShowingFilters}>
-                {showingFilters ? showMessage : hideMessage}
-              </button>
-            )
-          }}
-        </FiltersContext.Consumer>
-      </FiltersWrapper>
-    )
+  const setupFiltersWrapper = () => render(
+    <FiltersWrapper>
+      <FiltersContext.Consumer>
+        {({ showingFilters, toggleShowingFilters }) => {
+          return (
+            <button onClick={toggleShowingFilters}>
+              {showingFilters ? showMessage : hideMessage}
+            </button>
+          )
+        }}
+      </FiltersContext.Consumer>
+    </FiltersWrapper>
+  )
+
+  it('should update the filters context with correct state values', () => {
+    const { getByText } = setupFiltersWrapper()
 
     expect(getByText(hideMessage)).toBeInTheDocument()
 
@@ -42,5 +44,7 @@ describe('The <FiltersWrapper /> component', () => {
     expect(getByText(showMessage)).toBeInTheDocument()
   })
 
-  it('❌ should update the body style to prevent scrolling when filter is toggled', () => {})
+  it('should update the body style to prevent scrolling when filter is toggled', () => {
+
+  })
 })
