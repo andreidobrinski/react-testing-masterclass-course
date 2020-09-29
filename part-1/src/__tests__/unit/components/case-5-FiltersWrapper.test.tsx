@@ -45,6 +45,14 @@ describe('The <FiltersWrapper /> component', () => {
   })
 
   it('should update the body style to prevent scrolling when filter is toggled', () => {
+    const { getByText } = setupFiltersWrapper()
 
+    fireEvent.click(getByText(hideMessage))
+
+    expect(document.body.style.overflow).toBe('hidden')
+
+    fireEvent.click(getByText(showMessage))
+
+    expect(document.body.style.overflow).toBe('scroll')
   })
 })
