@@ -25,6 +25,22 @@ describe('The useOutsideClick hook', () => {
     )
   }
 
+  const PanelToggle = () => {
+    const [showing, setShowing] = useState(true)
+
+    return (
+      <>
+        <button
+          data-testid="PanelToggleButton"
+          onClick={() => setShowing(false)}
+        >
+          Toggle panel
+         </button>
+        {showing ? <Panel /> : null}
+      </>
+    )
+  }
+
   it('calls the outside click handler when an outside click is initiated', () => {
     const { getByTestId } = render(
       <div>
@@ -40,5 +56,13 @@ describe('The useOutsideClick hook', () => {
     expect((getByTestId('PanelButton'))).toHaveTextContent('SHOWING BUTTON')
   })
 
-  it('❌ cleans up the event listeners after component is unmounted', () => {})
+  it('cleans up the event listeners after component is unmounted', () => {
+    const removeEventListener = jest.spyOn(document, 'removeEventListener')
+
+    const { getByTestId } = render(<PanelToggle />)
+
+    fireEvent.click(getByTestId('PanelToggleButton'))
+
+    expect(removeEventListener).toHaveBeenCalled()
+  })
 })
