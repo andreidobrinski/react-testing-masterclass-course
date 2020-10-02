@@ -2,6 +2,7 @@ import React from 'react'
 import { Axios } from '../../helpers/axios'
 import { render, fireEvent, act, waitFor } from '@testing-library/react'
 import { Provider as StoreProvider } from 'react-redux'
+import { MemoryRouter } from 'react-router-dom'
 import { productBuilder } from '../utils'
 
 import App from '../../components/App'
@@ -16,9 +17,11 @@ describe('The app ', () => {
   const setupApp = () =>
     render(
       <StoreProvider store={createStore()}>
-        <FiltersWrapper>
-          <App />
-        </FiltersWrapper>
+        <MemoryRouter>
+          <FiltersWrapper>
+            <App />
+          </FiltersWrapper>
+        </MemoryRouter>
       </StoreProvider>,
     )
 
