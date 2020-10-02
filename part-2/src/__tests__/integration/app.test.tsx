@@ -56,6 +56,11 @@ describe('The app ', () => {
   test('it can search products as user types in the search field', async () => {
     jest.useFakeTimers()
     mockAxios.get
+      // fetches the shopping cart items
+      .mockResolvedValueOnce({
+        data: [productBuilder()]
+      })
+      // fetches all the products on homepage
       .mockResolvedValueOnce({
         data: [
           productBuilder(),
@@ -65,6 +70,7 @@ describe('The app ', () => {
           productBuilder(),
         ],
       })
+      // searches products
       .mockResolvedValueOnce({
         data: [productBuilder(), productBuilder()],
       })
@@ -86,7 +92,8 @@ describe('The app ', () => {
       jest.runAllTimers()
     })
 
-    await waitFor(() => expect(mockAxios.get).toHaveBeenCalledTimes(2))
+    // shopping cart, products home page, seach products
+    await waitFor(() => expect(mockAxios.get).toHaveBeenCalledTimes(3))
 
     expect(await findAllByTestId('ProductTile')).toHaveLength(2)
   })
