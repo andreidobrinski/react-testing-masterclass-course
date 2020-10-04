@@ -1,4 +1,5 @@
 import React from 'react'
+import Modal from 'react-modal'
 import { Axios } from '../../helpers/axios'
 import { render, fireEvent, act, waitFor } from '@testing-library/react'
 import { Provider as StoreProvider } from 'react-redux'
@@ -181,5 +182,84 @@ describe('The app ', () => {
 
   test('❌it can remove a product from cart', async () => {})
 
-  test('❌it can go through and complete the checkout flow', async () => {})
+  test('it can go through and complete the checkout flow', async () => {
+     Modal.setAppElement(document.createElement('div'))
+     const [product1, product2, product3] = [
+       {
+         ...productBuilder(),
+         priceUnformatted: 4000,
+       },
+       {
+         ...productBuilder(),
+         priceUnformatted: 4000,
+       },
+       productBuilder(),
+     ]
+
+     mockAxios.get.mockImplementation(
+       (url: string) =>
+         new Promise((resolve) => {
+           if (url === 'cart') {
+             return resolve({
+               data: [product1, product2],
+             })
+           }
+
+           return resolve({
+             data: [product1, product2, product3],
+           })
+         }),
+     )
+
+     mockAxios.post.mockResolvedValue({
+       data: {
+         message: 'Success.',
+       },
+     })
+
+     const { getByTestId, getByText, findByTestId } = setupApp()
+
+     fireEvent.click(getByTestId('CartButton'))
+
+     await waitFor(() => expect(mockAxios.get).toHaveBeenCalledTimes(2))
+
+     const checkoutButton = getByTestId('CheckoutButton')
+
+     expect(checkoutButton).toHaveTextContent('Checkout $80')
+
+     const TEST_STRIPE_TOKEN = 'TEST_STRIPE_TOKEN'
+
+     const createToken = jest.fn().mockResolvedValue({
+       error: null,
+       token: TEST_STRIPE_TOKEN,
+     })
+
+     window.Stripe = jest.fn().mockReturnValue({
+       createToken,
+       elements: jest.fn().mockReturnValue({
+         create: jest.fn().mockReturnValue({
+           mount: jest.fn(),
+           on: jest.fn(),
+           destroy: jest.fn(),
+           update: jest.fn(),
+         }),
+       }),
+     }) as any
+
+     fireEvent.click(checkoutButton)
+
+     expect(getByText('Checkout $80')).toBeInTheDocument()
+
+     fireEvent.click(getByTestId('PlaceOrderButton'))
+
+     await waitFor(() => expect(createToken).toHaveBeenCalledTimes(1))
+     await waitFor(() =>
+       expect(mockAxios.post).toHaveBeenCalledWith('checkout', {
+         token: TEST_STRIPE_TOKEN,
+       }),
+     )
+
+     expect(await findByTestId('CartButton')).toHaveTextContent('Cart (0)')
+     expect(await findByTestId('FilterButton')).toBeInTheDocument()
+  })
 })
